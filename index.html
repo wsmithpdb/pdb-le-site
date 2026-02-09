@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MN PDB – Law Enforcement Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+  <!-- HEADER -->
+  <header class="sticky top-0 z-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur border-b border-slate-200 dark:border-slate-700">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <img
+          src="/assets/logo.png"
+          alt="MN Board logo"
+          class="h-16 w-16 shrink-0 rounded-full ring-1 ring-slate-200 dark:ring-slate-600 object-contain bg-white dark:bg-slate-800"
+          loading="eager"
+          decoding="async"
+          onerror="this.style.display='none'"
+        />
+        <div>
+          <h1 class="text-2xl font-semibold leading-tight">
+            Minnesota Board of Private Detective &amp; Protective Agent Services
+          </h1>
+          <p class="text-sm text-slate-600 dark:text-slate-300">
+            Law Enforcement Portal – Quick reference, license verification, and contact information.
+          </p>
+        </div>
+      </div>
+
+      <button
+        id="themeToggle"
+        type="button"
+        class="text-xs px-3 py-1 rounded-full border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700"
+      >
+        🌙 Dark mode
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-8">
+    <!-- WELCOME / GUIDE VIEW (default) -->
+    <section id="view-welcome" data-view="welcome" class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 md:p-6 shadow-sm">
+      <h2 class="text-xl font-semibold mb-3">Law Enforcement Quick Reference Guide</h2>
+
+      <div class="space-y-4 text-sm">
+        <!-- Common Violations -->
+        <div>
+          <h3 class="text-sm font-semibold mb-1">Common Violations</h3>
+          <ul class="list-disc list-inside space-y-1 text-slate-700 dark:text-slate-200">
+            <li>Operating as a security guard or private investigator without a license</li>
+            <li>No valid permit to carry while armed on duty</li>
+            <li>No ID card on employee while on duty</li>
+            <li>Vehicles mainly using prohibited colors; Blue, Brown, Green, Black, White, Maroon, Gold</li>
+            <li>Uniforms using prohibited colors; Blue, Brown, Green, Maroon</li>
+          </ul>
+        </div>
+
+        <!-- When you see -->
+        <div>
+          <h3 class="text-sm font-semibold mb-1">When you see a security guard or private investigator</h3>
+          <ul class="list-disc list-inside space-y-1 text-slate-700 dark:text-slate-200">
+            <li>Ask for their ID card, see statute 326.336 for requirements</li>
+            <li>Ask for their permit to carry (if armed)</li>
+            <li>Call or email us to confirm company is licensed</li>
+            <li>Report any violations to us</li>
+            <li>Educate businesses and venues in your jurisdiction to verify license status of companies</li>
+            <li>Press charges for violations outside of our authority</li>
+            <li>Work with your city / county prosecutor for charges</li>
+          </ul>
+        </div>
+
+        <!-- Quick Facts -->
+        <div>
+          <h3 class="text-sm font-semibold mb-1">Quick Facts</h3>
+          <ul class="list-disc list-inside space-y-1 text-slate-700 dark:text-slate-200">
+            <li>Violation of statute (326.32 - 326.339) is a gross misdemeanor, unless otherwise specified</li>
+            <li>This industry employs more than 13,000 individuals in MN</li>
+            <li>
+              These services require a license in MN; venue access, unclaimed property searches, background checks,
+              secure people &amp; property transports, criminal or civil investigations and other duties listed in 326.338
+            </li>
+            <li>We are a regulatory Board and do not have the authority to discipline entities that are not licensed</li>
+            <li>
+              Proprietary employers are not required to be licensed, but must comply with background check requirements,
+              see definition in 326.32
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Navigation buttons -->
+      <div class="mt-6 flex flex-wrap gap-3">
+        <button
+          type="button"
+          data-go="search"
+          class="inline-flex items-center justify-center px-4 py-2 rounded-full bg-sky-700 text-white text-sm font-medium hover:bg-sky-800"
+        >
+          Go to License Lookup
+        </button>
+        <button
+          type="button"
+          data-go="statutes"
+          class="inline-flex items-center justify-center px-4 py-2 rounded-full bg-slate-800 text-white text-sm font-medium hover:bg-slate-900"
+        >
+          View Statutes &amp; Rules
+        </button>
+        <button
+          type="button"
+          data-go="contact"
+          class="inline-flex items-center justify-center px-4 py-2 rounded-full bg-emerald-700 text-white text-sm font-medium hover:bg-emerald-800"
+        >
+          Contact the PDB
+        </button>
+      </div>
+    </section>
+
+    <!-- LICENSE LOOKUP VIEW (hidden by default) -->
+    <section id="view-search" data-view="search" class="hidden space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex flex-col gap-1">
+          <h2 class="text-lg font-semibold">License Lookup</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-300">
+            Search by license number, company name, DBA, or city.
+          </p>
+        </div>
+        <button
+          type="button"
+          data-go="welcome"
+          class="text-xs px-3 py-1 rounded-full border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700"
+        >
+          Back to Quick Reference
+        </button>
+      </div>
+
+      <div class="grid gap-3 grid-cols-1 md:grid-cols-3">
+        <input
+          id="q"
+          class="border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm rounded-xl px-3 py-2 text-slate-900 dark:text-slate-100"
+          placeholder="Search by license #, holder, DBA, city, etc."
+        />
+      </div>
+
+      <div class="flex items-center justify-between mt-3">
+        <div id="count" class="text-sm text-slate-600 dark:text-slate-300">Enter a search term to begin.</div>
+        <div class="text-xs text-slate-500 dark:text-slate-400 italic">
+          Scroll inside the table to load more results
+        </div>
+      </div>
+
+      <div
+        id="toast"
+        class="mb-3 p-3 rounded-lg border border-red-200 dark:border-red-600 bg-red-50 dark:bg-red-900/60 text-red-800 dark:text-red-100 text-sm hidden"
+      ></div>
+
+      <div
+        id="scrollContainer"
+        class="overflow-auto border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 max-h-[70vh]"
+      >
+        <table class="min-w-full text-sm">
+          <thead class="bg-slate-100 dark:bg-slate-800 sticky top-0 z-10">
+            <tr class="text-left">
+              <th class="p-2">License #</th>
+              <th class="p-2">License Type</th>
+              <th class="p-2">Category</th>
+              <th class="p-2">License Holder</th>
+              <th class="p-2">DBA</th>
+              <th class="p-2">City</th>
+              <th class="p-2">Next Reissuance Date</th>
+              <th class="p-2">More Information</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- STATUTES VIEW (hidden by default) -->
+    <section id="view-statutes" data-view="statutes" class="hidden">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-semibold">Relevant Statutes &amp; Rules</h2>
+        <button
+          type="button"
+          data-go="welcome"
+          class="text-xs px-3 py-1 rounded-full border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700"
+        >
+          Back to Quick Reference
+        </button>
+      </div>
+
+      <div class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 md:p-6 shadow-sm">
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+          Quick reference links for common statutes and rules you may need in the field. All links open in a new tab.
+        </p>
+
+        <div class="space-y-4 text-sm">
+          <div>
+            <a
+              href="https://www.revisor.mn.gov/statutes/cite/326.3381"
+              target="_blank"
+              rel="noreferrer"
+              class="font-medium text-sky-700 dark:text-sky-400 underline"
+            >
+              Licensing – Minn. Stat. 326.3381
+            </a>
+            <p class="text-xs text-slate-500 dark:text-slate-300">
+              Licensing requirements and general provisions for private detectives and protective agents.
+            </p>
+          </div>
+
+          <div>
+            <a
+              href="https://www.revisor.mn.gov/statutes/cite/326.338"
+              target="_blank"
+              rel="noreferrer"
+              class="font-medium text-sky-700 dark:text-sky-400 underline"
+            >
+              Definitions – Minn. Stat. 326.338
+            </a>
+            <p class="text-xs text-slate-500 dark:text-slate-300">
+              Defines "private detective," "protective agent," and related terms.
+            </p>
+          </div>
+
+          <div>
+            <a
+              href="https://www.revisor.mn.gov/statutes/cite/326.336"
+              target="_blank"
+              rel="noreferrer"
+              class="font-medium text-sky-700 dark:text-sky-400 underline"
+            >
+              Employees of License Holders – Minn. Stat. 326.336
+            </a>
+            <p class="text-xs text-slate-500 dark:text-slate-300">
+              Requirements for employee ID cards and related obligations for license holders.
+            </p>
+          </div>
+
+          <div>
+            <a
+              href="https://www.revisor.mn.gov/statutes/cite/326.3384"
+              target="_blank"
+              rel="noreferrer"
+              class="font-medium text-sky-700 dark:text-sky-400 underline"
+            >
+              Prohibited Acts – Minn. Stat. 326.3384
+            </a>
+            <p class="text-xs text-slate-500 dark:text-slate-300">
+              Lists prohibited conduct by license holders, employees, and others.
+            </p>
+          </div>
+
+          <div>
+            <a
+              href="https://www.revisor.mn.gov/statutes/cite/169.98"
+              target="_blank"
+              rel="noreferrer"
+              class="font-medium text-sky-700 dark:text-sky-400 underline"
+            >
+              Vehicle Colors – Minn. Stat. 169.98
+            </a>
+            <p class="text-xs text-slate-500 dark:text-slate-300">
+              Restrictions on vehicle colors and markings that resemble law enforcement.
+            </p>
+          </div>
+
+          <div>
+            <a
+              href="https://www.revisor.mn.gov/statutes/cite/626.88"
+              target="_blank"
+              rel="noreferrer"
+              class="font-medium text-sky-700 dark:text-sky-400 underline"
+            >
+              Uniform Colors – Minn. Stat. 626.88
+            </a>
+            <p class="text-xs text-slate-500 dark:text-slate-300">
+              Regulation of peace officer-style uniforms, including restricted colors.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT VIEW (hidden by default) -->
+    <section id="view-contact" data-view="contact" class="hidden">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-semibold">Contact the PDB</h2>
+        <button
+          type="button"
+          data-go="welcome"
+          class="text-xs px-3 py-1 rounded-full border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700"
+        >
+          Back to Quick Reference
+        </button>
+      </div>
+
+      <div class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 md:p-6 shadow-sm">
+        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+          For field questions about licenses, unlicensed activity, or to coordinate with Board staff.
+        </p>
+
+        <div class="grid gap-4 md:grid-cols-2 text-sm">
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300 mb-1">
+              Office Address
+            </h3>
+            <p class="text-sm leading-relaxed">
+              1600 University Ave. W, Suite 200<br />
+              St. Paul, MN 55104
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300 mb-1">
+              Phone
+            </h3>
+            <p class="text-sm leading-relaxed">
+              <a href="tel:16513550800" class="underline">651-355-0800</a>
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300 mb-1">
+              Email
+            </h3>
+            <p class="text-sm leading-relaxed">
+              <a href="mailto:mn.pdb@state.mn.us" class="underline">mn.pdb@state.mn.us</a>
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300 mb-1">
+              Fax
+            </h3>
+            <p class="text-sm leading-relaxed">
+              651-797-1505
+            </p>
+          </div>
+        </div>
+
+        <p class="mt-4 text-xs text-slate-500 dark:text-slate-400">
+          Contact the Board with any questions or to report violations regarding licensed entities.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal" class="fixed inset-0 z-50 bg-black/40 dark:bg-black/60 hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full shadow-2xl max-h-[85vh] overflow-auto ring-1 ring-slate-200 dark:ring-slate-700">
+      <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 sticky top-0 bg-white dark:bg-slate-900 z-10">
+        <h2 class="text-lg font-semibold">License Details</h2>
+        <button id="closeModal" class="px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700">
+          Close
+        </button>
+      </div>
+      <div id="modalBody" class="p-4 text-sm"></div>
+    </div>
+  </div>
+
+  <script>
+    // --- THEME TOGGLE ---
+    const themeToggle = document.getElementById("themeToggle");
+    const root = document.documentElement;
+
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        root.classList.add("dark");
+        if (themeToggle) themeToggle.textContent = "☀️ Light mode";
+      } else {
+        root.classList.remove("dark");
+        if (themeToggle) themeToggle.textContent = "🌙 Dark mode";
+      }
+    }
+
+    // Load stored theme or system preference
+    (function initTheme() {
+      try {
+        const stored = localStorage.getItem("theme");
+        if (stored === "dark" || stored === "light") {
+          applyTheme(stored);
+        } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          applyTheme("dark");
+        } else {
+          applyTheme("light");
+        }
+      } catch {
+        applyTheme("light");
+      }
+    })();
+
+    if (themeToggle) {
+      themeToggle.addEventListener("click", () => {
+        const isDark = root.classList.contains("dark");
+        const next = isDark ? "light" : "dark";
+        applyTheme(next);
+        try {
+          localStorage.setItem("theme", next);
+        } catch {}
+      });
+    }
+
+    // --- STATE ---
+    const state = {
+      q: "",
+      page: 1,
+      pageSize: 500,
+      total: 0,
+      data: [],
+      searchLoaded: false // only load results after they actually open the lookup
+    };
+
+    let isLoading = false;
+    let hasMore = true;
+
+    // --- ELEMENTS ---
+    const viewSections = document.querySelectorAll("[data-view]");
+    const navButtons = document.querySelectorAll("[data-go]");
+
+    const els = {
+      q: document.getElementById("q"),
+      rows: document.getElementById("rows"),
+      count: document.getElementById("count"),
+      toast: document.getElementById("toast"),
+      modal: document.getElementById("modal"),
+      modalBody: document.getElementById("modalBody"),
+      closeModal: document.getElementById("closeModal"),
+      scroll: document.getElementById("scrollContainer")
+    };
+
+    // --- VIEW SWITCHING ---
+    function showView(name) {
+      viewSections.forEach((section) => {
+        const v = section.dataset.view;
+        if (v === name) {
+          section.classList.remove("hidden");
+        } else {
+          section.classList.add("hidden");
+        }
+      });
+
+      // If they just opened search view and we haven't loaded anything yet, load page 1
+      if (name === "search" && !state.searchLoaded) {
+        state.searchLoaded = true;
+        state.page = 1;
+        state.data = [];
+        state.total = 0;
+        hasMore = true;
+        loadPage(1);
+      }
+    }
+
+    navButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const target = btn.dataset.go;
+        if (!target) return;
+        showView(target);
+      });
+    });
+
+    // Default: welcome view only
+    showView("welcome");
+
+    // --- UTILS ---
+    function debounce(fn, ms = 250) {
+      let t;
+      return (...a) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(...a), ms);
+      };
+    }
+
+    function showError(msg) {
+      if (!els.toast) return;
+      els.toast.textContent = msg;
+      els.toast.classList.remove("hidden");
+      console.error(msg);
+    }
+
+    function clearError() {
+      if (!els.toast) return;
+      els.toast.classList.add("hidden");
+      els.toast.textContent = "";
+    }
+
+    function fmtDate(s) {
+      if (!s) return "";
+      const d = new Date(s);
+      return isNaN(d) ? s : d.toLocaleDateString();
+    }
+
+    function render() {
+      if (!els.rows) return;
+      const list = state.data;
+
+      els.rows.innerHTML = list
+        .map(
+          (r, i) => `
+        <tr class="border-t border-slate-200 dark:border-slate-700">
+          <td class="p-2 font-medium">${r.license_number || ""}</td>
+          <td class="p-2">${r.license_type || ""}</td>
+          <td class="p-2">${r.category || ""}</td>
+          <td class="p-2">${r.holder || ""}</td>
+          <td class="p-2">${r.dba || ""}</td>
+          <td class="p-2">${r.city || ""}</td>
+          <td class="p-2">${fmtDate(r.next_reissue)}</td>
+          <td class="p-2">
+            <button class="px-2 py-1 border border-slate-300 dark:border-slate-600 rounded bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700" onclick="openMore(${i})">
+              More Info
+            </button>
+          </td>
+        </tr>
+      `
+        )
+        .join("");
+
+      const shown = list.length;
+      const total = state.total || 0;
+
+      if (els.count) {
+        if (!state.searchLoaded) {
+          els.count.textContent = "Enter a search term to begin.";
+        } else if (total === 0 && !isLoading) {
+          els.count.textContent = "No results";
+        } else {
+          const totalText = total ? total.toLocaleString() : "…";
+          const shownText = shown ? shown.toLocaleString() : "0";
+          els.count.textContent = `${totalText} matching • showing ${shownText}`;
+        }
+      }
+
+      window._lastResults = list;
+      maybeAutoLoadMore();
+    }
+
+    async function loadPage(page) {
+      if (isLoading || !hasMore) return;
+      clearError();
+      if (page === 1 && els.count) {
+        els.count.textContent = "Loading…";
+      }
+      isLoading = true;
+
+      try {
+        const params = new URLSearchParams({
+          q: state.q,
+          page: String(page),
+          pageSize: String(state.pageSize)
+        });
+
+        const res = await fetch(`/.netlify/functions/licenses?${params.toString()}`);
+        const data = await res.json();
+        if (!res.ok || data.ok === false) {
+          throw new Error(data.error || `HTTP ${res.status}`);
+        }
+
+        state.total = data.total || 0;
+        const results = data.results || [];
+
+        if (page === 1) {
+          state.data = results;
+        } else {
+          state.data = state.data.concat(results);
+        }
+
+        hasMore = state.data.length < state.total;
+        render();
+      } catch (e) {
+        showError(e.message || String(e));
+        if (page === 1) {
+          state.total = 0;
+          state.data = [];
+          render();
+        }
+        hasMore = false;
+      } finally {
+        isLoading = false;
+      }
+    }
+
+    function maybeAutoLoadMore() {
+      if (!els.scroll || !state.searchLoaded || isLoading || !hasMore) return;
+      const el = els.scroll;
+      if (el.scrollHeight <= el.clientHeight + 50) {
+        state.page += 1;
+        loadPage(state.page);
+      }
+    }
+
+    const reload = debounce(() => {
+      if (!state.searchLoaded) {
+        // If they haven't opened the search view yet, no need to reload
+        return;
+      }
+      state.page = 1;
+      state.data = [];
+      state.total = 0;
+      hasMore = true;
+      loadPage(1);
+    }, 300);
+
+    // --- EVENTS ---
+
+    if (els.q) {
+      els.q.addEventListener("input", (e) => {
+        state.q = e.target.value;
+        if (!state.q.trim()) {
+          // If they clear the box, reset view but don't hit the backend yet
+          state.page = 1;
+          state.data = [];
+          state.total = 0;
+          hasMore = false;
+          render();
+          return;
+        }
+        reload();
+      });
+    }
+
+    if (els.scroll) {
+      els.scroll.addEventListener("scroll", () => {
+        const el = els.scroll;
+        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 200) {
+          if (!isLoading && hasMore) {
+            state.page += 1;
+            loadPage(state.page);
+          }
+        }
+      });
+    }
+
+    window.openMore = (i) => {
+      try {
+        const r = (window._lastResults || [])[i];
+        if (!r) return;
+        const fmt = (s) => {
+          if (!s) return "";
+          const d = new Date(s);
+          return isNaN(d) ? s : d.toLocaleDateString();
+        };
+        const val = (x) =>
+          x && String(x).trim()
+            ? String(x).trim()
+            : "<span class='text-slate-400'>—</span>";
+        const dl = (pairs) => `
+          <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
+            ${pairs
+              .map(
+                ([k, v]) => `
+              <div class="sm:col-span-1">
+                <dt class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-300">${k}</dt>
+                <dd class="mt-1 text-sm font-medium leading-relaxed break-words">${v}</dd>
+              </div>
+            `
+              )
+              .join("")}
+          </dl>`;
+
+        const L = [
+          ["License Number", val(r.license_number)],
+          ["License Holder", val(r.holder)],
+          ["DBA", val(r.dba)],
+          ["License Type", val(r.license_type)],
+          ["Date of Original Licensure", val(fmt(r.original_date))],
+          ["Next Reissuance Date", val(fmt(r.next_reissue))],
+          ["Qualified Representative", val(r.qualified_rep)],
+          ["Minnesota Manager", val(r.mn_manager)]
+        ];
+
+        const telMN = r.mn_phone
+          ? `<a href="tel:${r.mn_phone}" class="underline">${r.mn_phone}</a>`
+          : "<span class='text-slate-400'>—</span>";
+        const telCorp = r.corp_phone
+          ? `<a href="tel:${r.corp_phone}" class="underline">${r.corp_phone}</a>`
+          : "<span class='text-slate-400'>—</span>";
+        const email = r.email
+          ? `<a href="mailto:${r.email}" class="underline">${r.email}</a>`
+          : "<span class='text-slate-400'>—</span>";
+
+        const C = [
+          ["Address", val(r.mn_address)],
+          ["MN Phone Number", telMN],
+          ["Corporate Phone Number", telCorp],
+          ["Email", email]
+        ];
+
+        if (els.modalBody) {
+          els.modalBody.innerHTML = `
+            <div id="modalPrint" class="p-2 md:p-4">
+              <div class="space-y-6">
+                <section class="rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-slate-50/50 dark:bg-slate-900/60">
+                  <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-base font-semibold">License Information</h3>
+                    <span class="text-xs px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Summary</span>
+                  </div>
+                  ${dl(L)}
+                </section>
+                <section class="rounded-xl border border-slate-200 dark:border-slate-700 p-4 bg-slate-50/50 dark:bg-slate-900/60">
+                  <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-base font-semibold">Contact Information</h3>
+                    <span class="text-xs px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Minnesota</span>
+                  </div>
+                  ${dl(C)}
+                </section>
+              </div>
+            </div>
+          `;
+        }
+
+        if (els.modal) {
+          els.modal.classList.remove("hidden");
+          els.modal.classList.add("flex");
+        }
+      } catch (e) {
+        showError("Details panel error: " + (e && e.message) || e);
+      }
+    };
+
+    if (els.closeModal && els.modal) {
+      els.closeModal.addEventListener("click", () => {
+        els.modal.classList.add("hidden");
+        els.modal.classList.remove("flex");
+      });
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && els.modal) {
+        els.modal.classList.add("hidden");
+        els.modal.classList.remove("flex");
+      }
+    });
+  </script>
+</body>
+</html>
